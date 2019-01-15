@@ -17,5 +17,8 @@ context.fillRect(0,0,50,50)
 loadImage('/img/tiles.png')
 .then(image => {
   console.log(image)
-  context.drawImage(image, 0,0)
+  //look up drawImage on MDN, polymorphic (allows different rendering if you use different amount of args)
+  context.drawImage(image, 
+    0, 0, 16, 16, 
+    0, 0, 32, 32)
 })
