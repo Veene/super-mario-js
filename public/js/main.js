@@ -24,13 +24,16 @@ loadImage('/img/tiles.png')
   const sprites = new SpriteSheet(image, 16, 16)
   sprites.define('ground', 0, 0)
   sprites.define('sky', 3, 23)
-  //now that we've used the spritesheet define method and added ground and sky to the MAP object (sprites.tiles)
+  //now that we've used the spritesheet define method and added ground and sky to the MAP object (sprites.tiles) IMPORTANT STEP
 
   //loadLevel is a promise. It is the data.json() promise that has the body of 1-1.json file that was fetched with FETCH API in loaders.js
   loadLevel('1-1').then((data) => {
     console.log(data)
-    drawBackground(data.backgrounds[0], context, sprites)
-    drawBackground(data.backgrounds[1], context, sprites)
+    data.backgrounds.forEach((background) => {
+      drawBackground(background, context, sprites)
+    })
+    // drawBackground(data.backgrounds[0], context, sprites)
+    // drawBackground(data.backgrounds[1], context, sprites)
   })
 
   
