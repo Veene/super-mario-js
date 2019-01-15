@@ -32,6 +32,9 @@ export default class SpriteSheet {
     context.drawImage(buffer, x, y)
   }
   drawTile(name, context, x, y) {
+    //using this with for loops in main.js, it allows us to call this.draw with a set row and column size of this.width and this.height, otherwise we'd have to use x*16 and y*16
+    //This is just ANOTHER abstraction layer, could have easily been done with adding *this.width to draw methods context.drawImage
+    //This abstraction layer focuses on exact tiles, might need to call draw or a new class for other objects like characters?
     this.draw(name, context, x*this.width, y*this.height)
   }
 }
