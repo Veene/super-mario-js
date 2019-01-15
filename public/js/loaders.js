@@ -1,10 +1,13 @@
 export function loadImage(url) {
   return new Promise(resolve => {
+    //starts with a promise that will only be resolved once 'load' eventlistener pops - which will require an image call (With.src)
+    //makes new instance of class Image
     const image = new Image()
+    //add eventlistener that will pop once image loaded
     image.addEventListener('load', () => {
       resolve(image)
     })
-    //image.src triggers the addEventListener to resolve
+    //image.src triggers the addEventListener to resolve, because it basically forces the image to load
     image.src = url
   }).catch((err) => console.log(err))
 }
