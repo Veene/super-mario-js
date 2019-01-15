@@ -6,5 +6,5 @@ export function loadImage(url) {
     })
     //image.src triggers the addEventListener to resolve
     image.src = url
-  })
+  }).catch((err) => console.log(err))
 }
