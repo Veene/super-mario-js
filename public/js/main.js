@@ -16,6 +16,23 @@ function createSpriteLayer(sprite, pos) {
     }
   }
 }
+//vector2 keeps track of x and y
+class Vector2 {
+  constructor(x, y) {
+    this.set(x, y)
+  }
+  set(x, y) {
+    this.x = x
+    this.y = y
+  }
+}
+//merging different classes of vectors allows an entity to cleanly keep many different calculations
+class Entity {
+  constructor() {
+    this.pos = new Vector2(0, 0)
+    this.velocity = new Vector2(0, 0)
+  }
+}
 
 //important to keep loading grouped, or else it becomes disjointed & load longer. and makes a janky user experience - THIS IS PARALLEL
 //PROMISE.ALL for Parralel loading - 1st takes 3sec, second 2sec, so 5 if synchronous, but .all makes it 3 secs total.
@@ -31,13 +48,28 @@ Promise.all([
   const backgroundLayer = createBackgroundLayer(level.backgrounds, backgroundSprites)
   compositor.layers.push(backgroundLayer)
 
-  //creating const pos to be able to move mario, originally just loaded him at 64,64, but now swapped to x, y from pos
-  const pos = {
-    x:16,
-    y:16
-  }
+  //creating const pos to be able to move mario, (LEGACY CODE)
+  // const pos = {
+  //   x:16,
+  //   y:180
+  // }
+  // NEW way to create a class to hold these values (nicer)
+  const pos = new Vector2(16, 180)
+  //when you jump (LEGACY CODE)
+  // const velocity = {
+  //   x:2,
+  //   y:-10
+  // }
+  const velocity = new Vector2(2, -10)
+  const gravity = 0.5
+  // High level refactor for cleaner classes. Mario is now instance of Entity class, which has pos and velocity, which are instances
+  // of Vector2 class, which only holds this.x and this.y
+  const mario = new Entity()
+  mario.pos.set(64, 180)
+  mario.velocity.set(2, -10)
+
   //get marioSprite from loadMarioSprite() after promise.all spits it out
-  const spriteLayer = createSpriteLayer(marioSprite, pos)
+  const spriteLayer = createSpriteLayer(marioSprite, mario.pos)
   compositor.layers.push(spriteLayer)
   //adding a function that will update sprite drawing which will simulate movement
   function update() {
@@ -45,8 +77,10 @@ Promise.all([
     //curently we have pushed backgroundLayer and spriteLayer(aka mariospritelayer)
     compositor.draw(context)
     
-    pos.x += 1
-    pos.y += 1
+    mario.pos.x += mario.velocity.x
+    mario.pos.y += mario.velocity.y
+    //basically adding gravity - we will need a boundary that stops or redraws when passed
+    mario.velocity.y += gravity
     //requestAnimationFrame needs to be called inside update to keep calling update. Takes into acount users Refresh rate etc.
     requestAnimationFrame(update)
   }
