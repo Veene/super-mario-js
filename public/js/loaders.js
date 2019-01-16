@@ -5,7 +5,8 @@ export function loadImage(url) {
     const image = new Image()
     //add eventlistener that will pop once image loaded
     image.addEventListener('load', () => {
-      resolve(image)
+      //can be used to fake delay, returns image with resolve. Can also use resolve(image)
+      setTimeout(resolve, 0, image)
     })
     //image.src triggers the addEventListener to resolve, because it basically forces the image to load
     image.src = url
@@ -19,5 +20,11 @@ export function loadLevel(name){
     //it we have to call data.json(), which itself returns a promise to resolve with the body but in readable state
     // console.log(data)
     return data.json()
+    //you can keep chaining promises, setTimeout(resolve, time, argument to return)
+  }).then(json => {
+    //these last chainings are unecessary but I left it here if we ever want to fake delay
+    return new Promise(resolve => {
+      return setTimeout(resolve, 0, json)
+    })
   })
 }

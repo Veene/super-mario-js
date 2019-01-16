@@ -14,35 +14,48 @@ function drawBackground(background, context, sprites) {
     }
   })
 }
+function loadMarioSprite() {
+  //loadimage invokes the promise, after promise resolves with image after 2000ms, use that image(tileset) with spritesheet
+  return loadImage('/img/characters.gif')
+  .then(image => {
+    const sprites = new SpriteSheet(image, 16, 16)
+    sprites.define('idle', 17, 3)
+    //now that we've used the spritesheet define method and added ground and sky to the MAP object (sprites.tiles) IMPORTANT STEP
+    return sprites
+  })
+}
+
+function loadBackgroundSprites() {
+  //loadimage invokes the promise, after promise resolves with image after 2000ms, use that image(tileset) with spritesheet
+  return loadImage('/img/tiles.png')
+  .then(image => {
+    const sprites = new SpriteSheet(image, 16, 16)
+    sprites.defineTile('ground', 0, 0)
+    sprites.defineTile('sky', 3, 23)
+    //now that we've used the spritesheet define method and added ground and sky to the MAP object (sprites.tiles) IMPORTANT STEP
+    return sprites
+  })
+}
 
 const canvas = document.getElementById('screen')
 const context = canvas.getContext('2d')
 
-//loadimage invokes the promise, after promise resolves with image, use that image object/class to 
-loadImage('/img/tiles.png')
-.then(image => {
-  const sprites = new SpriteSheet(image, 16, 16)
-  sprites.define('ground', 0, 0)
-  sprites.define('sky', 3, 23)
-  //now that we've used the spritesheet define method and added ground and sky to the MAP object (sprites.tiles) IMPORTANT STEP
-
-  //loadLevel is a promise. It is the data.json() promise that has the body of 1-1.json file that was fetched with FETCH API in loaders.js
-  loadLevel('1-1').then((data) => {
-    console.log(data)
-    data.backgrounds.forEach((background) => {
-      drawBackground(background, context, sprites)
-    })
-    // drawBackground(data.backgrounds[0], context, sprites)
-    // drawBackground(data.backgrounds[1], context, sprites)
+//important to keep loading grouped, or else it becomes disjointed & load longer. and makes a janky user experience - THIS IS PARALLEL
+//PROMISE.ALL for Parralel loading - 1st takes 3sec, second 2sec, so 5 if synchronous, but .all makes it 3 secs total.
+Promise.all([
+  loadMarioSprite(),
+  loadBackgroundSprites(),
+  loadLevel('1-1'),  //loadLevel is a promise. It is the data.json() promise that has the body of 1-1.json file that was fetched with FETCH API in loaders.js
+]).then(([marioSprite, sprites, level]) => {
+  level.backgrounds.forEach((background) => {
+    drawBackground(background, context, sprites)
   })
+  marioSprite.draw('idle', context, 64, 64)
+})
+
+
 
   
-  // for(let x = 0; x<25; x++) {
-  //   for(let y=12; y<14; y++){
-  //     sprites.drawTile('ground', context, x, y)
-  //   }
-  // }
-})
 
 
   
