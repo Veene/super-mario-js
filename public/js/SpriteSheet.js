@@ -14,9 +14,9 @@ export default class SpriteSheet {
     buffer.height = height
     buffer.getContext('2d')
       //drawImage watch closely, using the 4x4 set from drawimage on MDN, when you create a Sprite sheet, 
-      //you say what size you will be giving to sprites, 16x16 px was chosen
+      //you say what size you will be giving to sprites, widthXheight px 
       .drawImage(this.image,
-        //src image positions(x/y (you want 1st sprite, its row 0, column 0)) + size(x/y) 
+        //src image positions(x/y position(top/left corner) + size(width/height)[keep width height exact same as the mini canvas created above buffer]
         x, y, width, height, 
         //destination image position (where will we draw on canvas. x/y top left, followed by usually same as size above, unless you want to scale it differently)
         0, 0, width, height)
@@ -24,6 +24,7 @@ export default class SpriteSheet {
     this.tiles.set(name, buffer)
   }
   defineTile(name, x , y) {
+    //we needed to create this separate for tiles, because we specified all tiles to be 16x16px, so we need to use this.width, this.height from constructor
     this.define(name, x*this.width, y*this.height, this.width, this.height)
   }
   //CUSTOM METHOD DRAW

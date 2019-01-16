@@ -1,5 +1,6 @@
 import SpriteSheet from './SpriteSheet.js'
 import { loadImage, loadLevel } from './loaders.js'
+import { loadMarioSprite, loadBackgroundSprites } from './sprites.js'
 
 //background is the data.json() we get back from loadLevel(call with data.background)
 function drawBackground(background, context, sprites) {
@@ -12,28 +13,6 @@ function drawBackground(background, context, sprites) {
         sprites.drawTile(background.tile, context, x, y)
       }
     }
-  })
-}
-function loadMarioSprite() {
-  //loadimage invokes the promise, after promise resolves with image after 2000ms, use that image(tileset) with spritesheet
-  return loadImage('/img/characters.gif')
-  .then(image => {
-    const sprites = new SpriteSheet(image, 16, 16)
-    sprites.define('idle', 17, 3)
-    //now that we've used the spritesheet define method and added ground and sky to the MAP object (sprites.tiles) IMPORTANT STEP
-    return sprites
-  })
-}
-
-function loadBackgroundSprites() {
-  //loadimage invokes the promise, after promise resolves with image after 2000ms, use that image(tileset) with spritesheet
-  return loadImage('/img/tiles.png')
-  .then(image => {
-    const sprites = new SpriteSheet(image, 16, 16)
-    sprites.defineTile('ground', 0, 0)
-    sprites.defineTile('sky', 3, 23)
-    //now that we've used the spritesheet define method and added ground and sky to the MAP object (sprites.tiles) IMPORTANT STEP
-    return sprites
   })
 }
 
@@ -50,7 +29,18 @@ Promise.all([
   level.backgrounds.forEach((background) => {
     drawBackground(background, context, sprites)
   })
-  marioSprite.draw('idle', context, 64, 64)
+  //creating const pos to be able to move mario, originally just loaded him at 64,64, but now swapped to x, y from pos
+  const pos = {
+    x:64,
+    y:64
+  }
+  //adding a function that will update sprite drawing which will simulate movement
+  function update() {
+    marioSprite.draw('idle', context, pos.x, pos.y)
+    pos.x += 2
+  }
+  
+  
 })
 
 
