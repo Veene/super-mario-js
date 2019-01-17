@@ -32,3 +32,10 @@ export function createBackgroundLayer(backgrounds, sprites) {
     context.drawImage(backgroundBuffer, 0, 0)
   }
 }
+
+export function createSpriteLayer(entity) {
+  //returns a function AKA its a closure
+  return function drawSpriteLayer(context) {
+    entity.draw(context)
+  }
+}
