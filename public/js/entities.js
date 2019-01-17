@@ -6,13 +6,11 @@ import { loadMarioSprite } from './sprites.js'
 export function createMario() {
   return loadMarioSprite().then(sprite => {
     const mario = new Entity()
-    mario.pos.set(64, 180)
-    mario.velocity.set(2, -10)
-    //moved mario.pos.x and y from the update() function and put it directly into the mario entity. Instead of writing mario.pos.x +=, you
+    
     //can write this.pos.x, because when you add a function to object you get access to this. mario.update = function
-    mario.update = function updateMario() {
-      this.pos.x += this.velocity.x
-      this.pos.y += this.velocity.y
+    mario.update = function updateMario(deltaTime) {
+      this.pos.x += this.velocity.x * deltaTime 
+      this.pos.y += this.velocity.y * deltaTime
     }
     mario.draw = function drawMario(context) {
       //referencing marioSprite from promise.all return of loadMarioSprite()
