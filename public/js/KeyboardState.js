@@ -3,9 +3,8 @@ const RELEASED = 0
 
 export default class KeyboardState {
   constructor() {
-
     //when keyboard button is pressed we store in keyState Map, Holds the current state of a given key
-    this.keyState = new Map()
+    this.keyStates = new Map()
     //holds the callback function for a given keycode
     this.keyMap = new Map()
   }
@@ -13,13 +12,31 @@ export default class KeyboardState {
     this.keyMap.set(keyCode, callback)
   }
   handleEvent(event) {
-    const {keycode} = event
-
+    const { keyCode } = event   //38, 39,40
     if(!this.keyMap.has(keyCode)){
       // did not have key mapped
-      return false
+      return
     }
+    //stop page scrolling if people click up or down
     event.preventDefault()
+    //check if keydown, if its not then its probably keyup
     const keyState = event.type === 'keydown' ? PRESSED : RELEASED
+    //
+    if(this.keyStates.get(keyCode) === keyState) { // 38(keyCode): PRESSED(keyState)
+      return
+    }
+    //otherwise
+    this.keyStates.set(keyCode, keyState) // 38:PRESSED
+    console.log(this.keyStates)
+    //get it and call it with keyState to callback
+    this.keyMap.get(keyCode)(keyState)
+  }
+
+  listenTo(window) {
+    ['keydown', 'keyup'].forEach(eventName => {
+      window.addEventListener('keydown', event => {
+        event.handleEvent(event)
+      })
+    })
   }
 }

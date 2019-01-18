@@ -5,11 +5,13 @@ import { createBackgroundLayer, createSpriteLayer } from './layers.js'
 import Entity from './Entity.js'
 import { createMario } from './entities.js'
 import Timer from './Timer.js'
-
-window.addEventListener('keydown', event => {
-  event.preventDefault()
-  console.log(event)
+import Keyboard from './KeyboardState.js'
+keyState
+const input = new Keyboard()
+input.addMapping(32, keyState => {
+  console.log(keyState)
 })
+
 
 const canvas = document.getElementById('screen')
 const context = canvas.getContext('2d')
