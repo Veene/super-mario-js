@@ -6,11 +6,6 @@ import Entity from './Entity.js'
 import { createMario } from './entities.js'
 import Timer from './Timer.js'
 import Keyboard from './KeyboardState.js'
-keyState
-const input = new Keyboard()
-input.addMapping(32, keyState => {
-  console.log(keyState)
-})
 
 
 const canvas = document.getElementById('screen')
@@ -32,8 +27,20 @@ Promise.all([
   compositor.layers.push(backgroundLayer)
 
   const gravity = 2000
+  console.log(mario)
   mario.pos.set(64, 180)
-  mario.velocity.set(200, -600)
+  // mario.vel.set(200, -600)
+
+  const SPACE = 32
+  const input = new Keyboard()
+  input.addMapping(SPACE, keyState => {
+    if(keyState) { //if its being held, mario is continuously in the motion
+      mario.jump.start()
+    } else { //can choose to early cancel for a smaller jump?
+      mario.jump.cancel()
+    }
+  })
+  input.listenTo(window)
 
   //get marioSprite from loadMarioSprite() after promise.all spits it out LEGACY
   //NEW - now we add mario object/entity instead of marioSprite
@@ -50,7 +57,7 @@ Promise.all([
 
       // console.log(mario.pos)
       //basically adding gravity - we will need a boundary that stops or redraws when passed
-      mario.velocity.y += gravity * deltaTime
+      mario.vel.y += gravity * deltaTime
     }
     
     //requestAnimationFrame needs to be called inside update to keep calling update. Takes into acount users Refresh rate etc.

@@ -26,16 +26,16 @@ export default class KeyboardState {
       return
     }
     //otherwise
-    this.keyStates.set(keyCode, keyState) // 38:PRESSED
+    this.keyStates.set(keyCode, keyState) // 38:PRESSED or if keyState is new, 38:RELEASED
     console.log(this.keyStates)
-    //get it and call it with keyState to callback
+    //get it and call it with keyState to callback to actually do what we want when that key is pressed
     this.keyMap.get(keyCode)(keyState)
   }
 
   listenTo(window) {
     ['keydown', 'keyup'].forEach(eventName => {
-      window.addEventListener('keydown', event => {
-        event.handleEvent(event)
+      window.addEventListener(eventName, event => {
+        this.handleEvent(event)
       })
     })
   }
