@@ -2,10 +2,14 @@ import {  loadLevel } from './loaders.js'
 import { createMario } from './entities.js'
 import Timer from './Timer.js'
 import Keyboard from './KeyboardState.js'
+import {createCollisionLayer} from './layers.js'
 
 
 const canvas = document.getElementById('screen')
 const context = canvas.getContext('2d')
+
+
+
 
 
 //important to keep loading grouped, or else it becomes disjointed & load longer. and makes a janky user experience - THIS IS PARALLEL
@@ -17,6 +21,8 @@ Promise.all([
   
   const gravity = 2000
   mario.pos.set(64, 64)
+
+  createCollisionLayer(level)
 
   level.entities.add(mario)
 
@@ -30,7 +36,17 @@ Promise.all([
     }
   })
   input.listenTo(window)
-  
+
+  canvas.addEventListener('mousedown', (event) => {
+    if(event.buttons === 1) {
+      mario.vel.set(0,0)
+      mario.pos.set(event.offsetX, event.offsetY)
+    }
+  })
+  canvas.addEventListener('mousemove', (event) => {
+      mario.vel.set(0,0)
+      mario.pos.set(event.offsetX, event.offsetY)
+  })
   //adding a function that will update sprite drawing which will simulate movement
   const timer = new Timer(1/60)
   timer.update = function update(deltaTime) {
