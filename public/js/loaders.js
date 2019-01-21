@@ -1,3 +1,7 @@
+import Level from './Level.js'
+import { createBackgroundLayer, createSpriteLayer } from './layers.js'
+import { loadBackgroundSprites } from './sprites.js'
+
 export function loadImage(url) {
   return new Promise(resolve => {
     //starts with a promise that will only be resolved once 'load' eventlistener pops - which will require an image call (With.src)
@@ -13,18 +17,42 @@ export function loadImage(url) {
   }).catch((err) => console.log(err))
 }
 
-export function loadLevel(name){
-  return fetch(`/levels/${name}.json`)
-  .then((data) => {
-    //data returns a response to the fetch promise, there's a body, and a bunch of other parameters, but the body is in json, so to read
-    //it we have to call data.json(), which itself returns a promise to resolve with the body but in readable state
-    // console.log(data)
-    return data.json()
-    //you can keep chaining promises, setTimeout(resolve, time, argument to return)
-  }).then(json => {
-    //these last chainings are unecessary but I left it here if we ever want to fake delay
-    return new Promise(resolve => {
-      return setTimeout(resolve, 0, json)
+function createTiles(level, backgrounds) {
+  backgrounds.forEach(background => {
+    background.ranges.forEach(([x1, x2, y1, y2]) => {
+      for(let x = x1; x < x2; x++) {
+        for(let y = y1; y < y2; y++){
+          //coming from matrix class
+          level.tiles.set(x, y, { name: background.tile })
+        }
+      }
     })
+  })
+}
+
+
+export function loadLevel(name){
+  return Promise.all([
+    fetch(`/levels/${name}.json`)
+    .then((data) => data.json()),
+
+    loadBackgroundSprites()
+  ])
+ .then(([levelSpec, backgroundSprite]) => {
+   console.log(levelSpec.backgrounds) // [0: {tile,range} , 1:{tile,range}]
+    const level = new Level()
+
+    createTiles(level, levelSpec.backgrounds)
+
+    const backgroundLayer = createBackgroundLayer(level, backgroundSprite)
+    level.comp.layers.push(backgroundLayer)
+    //get marioSprite from loadMarioSprite() after promise.all spits it out LEGACY
+    //NEW - now we add mario object/entity instead of marioSprite
+    const spriteLayer = createSpriteLayer(level.entities)
+    level.comp.layers.push(spriteLayer)
+
+    console.log(level.tiles.grid)
+
+    return level
   })
 }

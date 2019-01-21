@@ -1,8 +1,4 @@
 import {  loadLevel } from './loaders.js'
-import { loadMarioSprite, loadBackgroundSprites } from './sprites.js'
-import Compositor from './Compositor.js'
-import { createBackgroundLayer, createSpriteLayer } from './layers.js'
-import Entity from './Entity.js'
 import { createMario } from './entities.js'
 import Timer from './Timer.js'
 import Keyboard from './KeyboardState.js'
@@ -16,20 +12,13 @@ const context = canvas.getContext('2d')
 //PROMISE.ALL for Parralel loading - 1st takes 3sec, second 2sec, so 5 if synchronous, but .all makes it 3 secs total.
 Promise.all([
   createMario(),
-  loadBackgroundSprites(),
   loadLevel('1-1'),  //loadLevel is a promise. It is the data.json() promise that has the body of 1-1.json file that was fetched with FETCH API in loaders.js
-]).then(([mario, backgroundSprites, level]) => {
-  const compositor = new Compositor()
-
-  //we instantiating compositor, now we needed to add the background layer of '1-1', so its stored and doesnt have to be relooped each time
-  //reminder that createBackgroundLayer return a function (closure) it requires a context to draw on
-  const backgroundLayer = createBackgroundLayer(level.backgrounds, backgroundSprites)
-  compositor.layers.push(backgroundLayer)
-
+]).then(([mario, level]) => {
+  
   const gravity = 2000
-  console.log(mario)
-  mario.pos.set(64, 180)
-  // mario.vel.set(200, -600)
+  mario.pos.set(64, 64)
+
+  level.entities.add(mario)
 
   const SPACE = 32
   const input = new Keyboard()
@@ -41,19 +30,15 @@ Promise.all([
     }
   })
   input.listenTo(window)
-
-  //get marioSprite from loadMarioSprite() after promise.all spits it out LEGACY
-  //NEW - now we add mario object/entity instead of marioSprite
-  const spriteLayer = createSpriteLayer(mario)
-  compositor.layers.push(spriteLayer)
+  
   //adding a function that will update sprite drawing which will simulate movement
   const timer = new Timer(1/60)
   timer.update = function update(deltaTime) {
       
-      mario.update(deltaTime)
+      level.update(deltaTime)
       //the draw method in compositor class calls each function stored in its layers array (closure from createBackgroundLayer)
       //curently we have pushed backgroundLayer and spriteLayer(aka mariospritelayer)
-      compositor.draw(context)
+      level.comp.draw(context)
 
       // console.log(mario.pos)
       //basically adding gravity - we will need a boundary that stops or redraws when passed
