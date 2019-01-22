@@ -62,13 +62,22 @@ export function createCollisionLayer(level) {
   }
   return function drawCollision(context) {
     //draw color
-    context.strokeStyle = 'blue'
+    context.strokeStyle = 'blue';
     resolvedTiles.forEach(({x, y}) => {
-      context.beginPath()
-      context.rect(x * tileSize, y * tileSize, tileSize, tileSize)
-      context.stroke()
+      context.beginPath();
+      context.rect(x * tileSize, y * tileSize, tileSize, tileSize);
+      context.stroke();
     })
-
+    context.strokeStyle = 'red';
+    // console.log('level', level)
+    // console.log('level.entities', level.entities)
+    //for every mario in level.entities (curr one)
+    level.entities.forEach((entity) => {
+      context.beginPath();
+      context.rect(entity.pos.x, entity.pos.y, entity.size.x, entity.size.y);
+      // console.log(entity.pos.x*tileSize, entity.pos.y * tileSize)
+      context.stroke();
+    })
     resolvedTiles.length = 0
   }
 }
